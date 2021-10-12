@@ -1,0 +1,132 @@
+---
+title: "Untitled"
+author: "Helena"
+date: "13/09/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+library(rvest)
+library(dplyr)
+
+url <- "https://cip.pucpr.br/eventos/semic/16/trabalhos.php"
+pagina <- read_html(url)
+
+tudo <- pagina %>%
+    html_nodes("td , .both , p , b") %>% 
+    html_text()
+
+head(tudo)
+
+```
+
+
+```{r cars}
+library(rvest)
+library(dplyr)
+
+url <- "https://cip.pucpr.br/eventos/semic/16/trabalhos.php"
+pagina <- read_html(url)
+
+autores <- pagina %>%
+    html_nodes("p") %>% 
+    html_text()
+
+head(autores)
+```
+
+
+```{r cars}
+library(rvest)
+library(dplyr)
+
+url <- "https://cip.pucpr.br/eventos/semic/16/trabalhos.php"
+pagina <- read_html(url)
+
+dados <- pagina %>%
+  html_element("table") %>%
+  html_table()
+
+head(dados)
+
+```
+
+
+```{r test}
+library(rvest)
+library(dplyr)
+
+url <- "https://cip.pucpr.br/eventos/semic/16/trabalhos.php"
+page <- read_html(url)
+
+##name = page %>% html_nodes(".lister-item-header a") %>% html_text()
+resumos_links <- page %>% html_nodes("a") %>% html_attr("href") %>% paste("https://cip.pucpr.br/eventos/semic/16/", ., sep="")
+
+resumos_links
+
+##year = page %>% html_nodes(".text-muted.unbold") %>% html_text()
+##rating = page %>% html_nodes(".ratings-imdb-rating strong") %>% html_text()
+##synopsis = page %>% html_nodes(".ratings-bar+ .text-muted") %>% html_text()
+
+get_resumo = function(resumos_links) {
+  resumo_page = read_html(resumos_links)
+  titulo <- resumo_page %>% html_nodes("h1") %>% html_text2()
+
+  autores <- resumo_page %>% html_nodes("h5") %>% html_text2()
+
+  texto <- resumo_page %>% html_nodes("h3+ p") %>% html_text2() %>% writeLines()
+
+  resumo_cast <- c(titulo, ",", autores, ",", texto)
+  resumo_cast
+  
+  return(resumo_cast)
+}
+
+
+dados_resumos = sapply(resumos_links[13:14], FUN = get_resumo, USE.NAMES = FALSE)
+
+dados_resumos
+
+#resumos = data.frame(resumos_links[13:20], stringsAsFactors = FALSE)
+
+resumos
+
+```
+
+
+
+```{r teste resumo}
+
+link_test <- "https://cip.pucpr.br/eventos/semic/16/resumo_template.php?id=0011439"
+resumo_page = read_html(link_test)
+
+titulo <- resumo_page %>% html_nodes("h1") %>% html_text2()
+
+
+autores <- resumo_page %>% html_nodes("h5") %>% html_text2()
+
+
+texto <- resumo_page %>% html_nodes("h3+ p") %>% html_text2() %>% writeLines()
+
+
+resumo_cast <- c(titulo, autores, texto)
+
+resumo_cast
+#resumo_cast = resumo_page %>% html_node("h1, h5") %>% html_text() %>% paste(collapse = ",")
+
+
+
+  
+```
+
+
